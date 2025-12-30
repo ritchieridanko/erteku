@@ -10,6 +10,7 @@ service AuthService {
   rpc SignUp(SignUpRequest) returns (AuthResponse);
   rpc SignIn(SignInRequest) returns (AuthResponse);
   rpc SignOut(SignOutRequest) returns (google.protobuf.Empty);
+  rpc IsEmailAvailable(EmailCheckRequest) returns (EmailCheckResponse);
 }
 
 message Auth {
@@ -41,4 +42,12 @@ message SignInRequest {
 
 message SignOutRequest {
   string refresh_token = 1;
+}
+
+message EmailCheckRequest {
+  string email = 1;
+}
+
+message EmailCheckResponse {
+  bool available = 1;
 }

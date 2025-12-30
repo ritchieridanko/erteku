@@ -108,6 +108,11 @@ func (h *AuthHandler) SignOut(ctx context.Context, req *apis.SignOutRequest) (*e
 	return &emptypb.Empty{}, h.su.RevokeSession(ctx, req.GetRefreshToken())
 }
 
+func (h *AuthHandler) IsEmailAvailable(ctx context.Context, req *apis.EmailCheckRequest) (*apis.EmailCheckResponse, error) {
+	available, err := h.au.IsEmailAvailable(ctx, req.GetEmail())
+	return &apis.EmailCheckResponse{Available: available}, err
+}
+
 func (h *AuthHandler) toAuthToken(at *models.AuthToken) *apis.AuthToken {
 	return &apis.AuthToken{
 		AccessToken:  at.AccessToken,

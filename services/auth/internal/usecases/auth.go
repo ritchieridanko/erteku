@@ -23,6 +23,7 @@ import (
 type AuthUsecase interface {
 	SignUp(ctx context.Context, data *models.SignUpRequest) (auth *models.Auth, err *ce.Error)
 	SignIn(ctx context.Context, data *models.SignInRequest) (auth *models.Auth, err *ce.Error)
+	IsEmailAvailable(ctx context.Context, email string) (available bool, err *ce.Error)
 }
 
 type authUsecase struct {
@@ -171,4 +172,18 @@ func (u *authUsecase) SignIn(ctx context.Context, data *models.SignInRequest) (*
 	}
 
 	return a, nil
+}
+
+func (u *authUsecase) IsEmailAvailable(ctx context.Context, email string) (bool, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.IsEmailAvailable")
+	defer span.End()
+
+	email = utils.NormalizeString(email)
+
+	// Validation
+	if ok, why := u.validator.Email(&email); !ok {
+		return false, ce.NewError(ce.CodeInvalidEmail, why, nil)
+	}
+
+	return u.ar.IsEmailAvailable(ctx, email)
 }
