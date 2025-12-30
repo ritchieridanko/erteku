@@ -9,6 +9,7 @@ import (
 	"github.com/ritchieridanko/erteku/services/auth/internal/utils"
 	"github.com/ritchieridanko/erteku/services/auth/internal/utils/ce"
 	"github.com/ritchieridanko/erteku/shared/contract/apis/v1"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type AuthHandler struct {
@@ -101,6 +102,10 @@ func (h *AuthHandler) SignIn(ctx context.Context, req *apis.SignInRequest) (*api
 		AuthToken: h.toAuthToken(at),
 		Auth:      h.toAuth(a),
 	}, err
+}
+
+func (h *AuthHandler) SignOut(ctx context.Context, req *apis.SignOutRequest) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, h.su.RevokeSession(ctx, req.GetRefreshToken())
 }
 
 func (h *AuthHandler) toAuthToken(at *models.AuthToken) *apis.AuthToken {

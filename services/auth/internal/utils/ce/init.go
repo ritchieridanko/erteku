@@ -49,6 +49,8 @@ func (e *Error) ToGRPCStatus() error {
 		return status.Error(codes.InvalidArgument, e.message)
 	case CodeAuthNotFound, CodeWrongPassword, CodeWrongSignInMethod:
 		return status.Error(codes.Unauthenticated, e.message)
+	case CodeSessionNotFound:
+		return status.Error(codes.NotFound, e.message)
 	case CodeEmailNotAvailable:
 		return status.Error(codes.AlreadyExists, e.message)
 	case CodeBCryptHashingFailed, CodeCacheQueryExec, CodeCacheScriptExec,

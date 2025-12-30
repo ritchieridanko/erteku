@@ -2,11 +2,14 @@ syntax = "proto3";
 
 package auth.v1;
 
+import "google/protobuf/empty.proto";
+
 option go_package = "github.com/ritchieridanko/erteku/shared/contract/apis/v1;apis";
 
 service AuthService {
   rpc SignUp(SignUpRequest) returns (AuthResponse);
   rpc SignIn(SignInRequest) returns (AuthResponse);
+  rpc SignOut(SignOutRequest) returns (google.protobuf.Empty);
 }
 
 message Auth {
@@ -34,4 +37,8 @@ message SignUpRequest {
 message SignInRequest {
   string email = 1;
   string password = 2;
+}
+
+message SignOutRequest {
+  string refresh_token = 1;
 }

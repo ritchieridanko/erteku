@@ -16,6 +16,7 @@ import (
 
 type SessionUsecase interface {
 	CreateSession(ctx context.Context, a *models.Auth, data *models.RequestMeta) (at *models.AuthToken, err *ce.Error)
+	RevokeSession(ctx context.Context, refreshToken string) (err *ce.Error)
 }
 
 type sessionUsecase struct {
@@ -84,4 +85,17 @@ func (u *sessionUsecase) CreateSession(ctx context.Context, a *models.Auth, data
 		RefreshToken: refreshToken,
 		ExpiresIn:    int64(u.duration.Seconds()),
 	}, err
+}
+
+func (u *sessionUsecase) RevokeSession(ctx context.Context, refreshToken string) *ce.Error {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "session.usecase.RevokeSession")
+	defer span.End()
+
+	// Invalid session does not fail RevokeSession process
+	err := u.sr.RevokeSessionByToken(ctx, refreshToken)
+	if err != nil && err.Code() != ce.CodeSessionNotFound {
+		return err
+	}
+
+	return nil
 }

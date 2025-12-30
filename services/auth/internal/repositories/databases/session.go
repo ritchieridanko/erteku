@@ -13,6 +13,7 @@ import (
 
 type SessionDatabase interface {
 	Insert(ctx context.Context, authID int64, data *models.CreateSession) (err *ce.Error)
+	RevokeByToken(ctx context.Context, refreshToken string) (err *ce.Error)
 	RevokeActive(ctx context.Context, authID int64, data *models.RequestMeta) (sessionID int64, err *ce.Error)
 }
 
@@ -46,6 +47,22 @@ func (d *sessionDatabase) Insert(ctx context.Context, authID int64, data *models
 		)
 	}
 
+	return nil
+}
+
+func (d *sessionDatabase) RevokeByToken(ctx context.Context, refreshToken string) *ce.Error {
+	query := `
+		UPDATE sessions
+		SET revoked_at = NOW()
+		WHERE refresh_token = $1 AND expires_at >= $2 AND revoked_at IS NULL
+	`
+
+	if err := d.database.Execute(ctx, query, refreshToken, time.Now().UTC()); err != nil {
+		if errors.Is(err, ce.ErrDBAffectNoRows) {
+			return ce.NewError(ce.CodeSessionNotFound, ce.MsgResourceNotFound, err)
+		}
+		return ce.NewError(ce.CodeDBQueryExec, ce.MsgInternalServer, err)
+	}
 	return nil
 }
 

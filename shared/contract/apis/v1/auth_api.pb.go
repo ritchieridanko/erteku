@@ -7,6 +7,7 @@
 package apis
 
 import (
+	empty "github.com/golang/protobuf/ptypes/empty"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -297,11 +298,55 @@ func (x *SignInRequest) GetPassword() string {
 	return ""
 }
 
+type SignOutRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SignOutRequest) Reset() {
+	*x = SignOutRequest{}
+	mi := &file_v1_auth_api_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SignOutRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignOutRequest) ProtoMessage() {}
+
+func (x *SignOutRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_auth_api_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignOutRequest.ProtoReflect.Descriptor instead.
+func (*SignOutRequest) Descriptor() ([]byte, []int) {
+	return file_v1_auth_api_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *SignOutRequest) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
 var File_v1_auth_api_proto protoreflect.FileDescriptor
 
 const file_v1_auth_api_proto_rawDesc = "" +
 	"\n" +
-	"\x11v1/auth_api.proto\x12\aauth.v1\"S\n" +
+	"\x11v1/auth_api.proto\x12\aauth.v1\x1a\x1bgoogle/protobuf/empty.proto\"S\n" +
 	"\x04Auth\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12%\n" +
@@ -320,10 +365,13 @@ const file_v1_auth_api_proto_rawDesc = "" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"A\n" +
 	"\rSignInRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword2\x7f\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"5\n" +
+	"\x0eSignOutRequest\x12#\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken2\xbb\x01\n" +
 	"\vAuthService\x127\n" +
 	"\x06SignUp\x12\x16.auth.v1.SignUpRequest\x1a\x15.auth.v1.AuthResponse\x127\n" +
-	"\x06SignIn\x12\x16.auth.v1.SignInRequest\x1a\x15.auth.v1.AuthResponseB?Z=github.com/ritchieridanko/erteku/shared/contract/apis/v1;apisb\x06proto3"
+	"\x06SignIn\x12\x16.auth.v1.SignInRequest\x1a\x15.auth.v1.AuthResponse\x12:\n" +
+	"\aSignOut\x12\x17.auth.v1.SignOutRequest\x1a\x16.google.protobuf.EmptyB?Z=github.com/ritchieridanko/erteku/shared/contract/apis/v1;apisb\x06proto3"
 
 var (
 	file_v1_auth_api_proto_rawDescOnce sync.Once
@@ -337,23 +385,27 @@ func file_v1_auth_api_proto_rawDescGZIP() []byte {
 	return file_v1_auth_api_proto_rawDescData
 }
 
-var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_v1_auth_api_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_v1_auth_api_proto_goTypes = []any{
-	(*Auth)(nil),          // 0: auth.v1.Auth
-	(*AuthToken)(nil),     // 1: auth.v1.AuthToken
-	(*AuthResponse)(nil),  // 2: auth.v1.AuthResponse
-	(*SignUpRequest)(nil), // 3: auth.v1.SignUpRequest
-	(*SignInRequest)(nil), // 4: auth.v1.SignInRequest
+	(*Auth)(nil),           // 0: auth.v1.Auth
+	(*AuthToken)(nil),      // 1: auth.v1.AuthToken
+	(*AuthResponse)(nil),   // 2: auth.v1.AuthResponse
+	(*SignUpRequest)(nil),  // 3: auth.v1.SignUpRequest
+	(*SignInRequest)(nil),  // 4: auth.v1.SignInRequest
+	(*SignOutRequest)(nil), // 5: auth.v1.SignOutRequest
+	(*empty.Empty)(nil),    // 6: google.protobuf.Empty
 }
 var file_v1_auth_api_proto_depIdxs = []int32{
 	1, // 0: auth.v1.AuthResponse.auth_token:type_name -> auth.v1.AuthToken
 	0, // 1: auth.v1.AuthResponse.auth:type_name -> auth.v1.Auth
 	3, // 2: auth.v1.AuthService.SignUp:input_type -> auth.v1.SignUpRequest
 	4, // 3: auth.v1.AuthService.SignIn:input_type -> auth.v1.SignInRequest
-	2, // 4: auth.v1.AuthService.SignUp:output_type -> auth.v1.AuthResponse
-	2, // 5: auth.v1.AuthService.SignIn:output_type -> auth.v1.AuthResponse
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
+	5, // 4: auth.v1.AuthService.SignOut:input_type -> auth.v1.SignOutRequest
+	2, // 5: auth.v1.AuthService.SignUp:output_type -> auth.v1.AuthResponse
+	2, // 6: auth.v1.AuthService.SignIn:output_type -> auth.v1.AuthResponse
+	6, // 7: auth.v1.AuthService.SignOut:output_type -> google.protobuf.Empty
+	5, // [5:8] is the sub-list for method output_type
+	2, // [2:5] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
 	2, // [2:2] is the sub-list for extension extendee
 	0, // [0:2] is the sub-list for field type_name
@@ -370,7 +422,7 @@ func file_v1_auth_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_auth_api_proto_rawDesc), len(file_v1_auth_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

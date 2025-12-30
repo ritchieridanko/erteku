@@ -28,6 +28,7 @@ const (
 	CodeInvalidPassword       errCode = "ERR_INVALID_PASSWORD"
 	CodeInvalidRequestMeta    errCode = "ERR_INVALID_REQUEST_META"
 	CodeJWTGenerationFailed   errCode = "ERR_JWT_GENERATION_FAILED"
+	CodeSessionNotFound       errCode = "ERR_SESSION_NOT_FOUND"
 	CodeUnknown               errCode = "ERR_UNKNOWN"
 	CodeWrongPassword         errCode = "ERR_WRONG_PASSWORD"
 	CodeWrongSignInMethod     errCode = "ERR_WRONG_SIGN_IN_METHOD"
@@ -38,4 +39,5 @@ const (
 	MsgInternalServer     string = "Internal server error"
 	MsgInvalidCredentials string = "Invalid credentials"
 	MsgMissingRequestMeta string = "Missing IP address or user agent"
+	MsgResourceNotFound   string = "Resource not found"
 )
