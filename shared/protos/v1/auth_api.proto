@@ -6,6 +6,7 @@ option go_package = "github.com/ritchieridanko/erteku/shared/contract/apis/v1;ap
 
 service AuthService {
   rpc SignUp(SignUpRequest) returns (AuthResponse);
+  rpc SignIn(SignInRequest) returns (AuthResponse);
 }
 
 message Auth {
@@ -26,6 +27,11 @@ message AuthResponse {
 }
 
 message SignUpRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message SignInRequest {
   string email = 1;
   string password = 2;
 }

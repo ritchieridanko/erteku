@@ -11,6 +11,7 @@ import (
 
 type AuthDatabase interface {
 	Insert(ctx context.Context, data *models.CreateAuth) (auth *models.Auth, err *ce.Error)
+	GetByEmail(ctx context.Context, email string) (auth *models.Auth, err *ce.Error)
 	IsEmailRegistered(ctx context.Context, email string) (registered bool, err *ce.Error)
 }
 
@@ -33,6 +34,29 @@ func (d *authDatabase) Insert(ctx context.Context, data *models.CreateAuth) (*mo
 
 	var a models.Auth
 	if err := row.Scan(&a.ID, &a.Email, &a.EmailVerifiedAt); err != nil {
+		return nil, ce.NewError(ce.CodeDBQueryExec, ce.MsgInternalServer, err)
+	}
+
+	return &a, nil
+}
+
+func (d *authDatabase) GetByEmail(ctx context.Context, email string) (*models.Auth, *ce.Error) {
+	query := `
+		SELECT id, email, password, email_verified_at
+		FROM auth
+		WHERE email = $1 AND deleted_at IS NULL
+	`
+	if d.database.WithinTx(ctx) {
+		query += " FOR UPDATE"
+	}
+
+	row := d.database.Query(ctx, query, email)
+
+	var a models.Auth
+	if err := row.Scan(&a.ID, &a.Email, &a.Password, &a.EmailVerifiedAt); err != nil {
+		if errors.Is(err, ce.ErrDBQueryNoRows) {
+			return nil, ce.NewError(ce.CodeAuthNotFound, ce.MsgInvalidCredentials, err)
+		}
 		return nil, ce.NewError(ce.CodeDBQueryExec, ce.MsgInternalServer, err)
 	}
 

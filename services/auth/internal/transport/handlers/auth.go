@@ -64,12 +64,51 @@ func (h *AuthHandler) SignUp(ctx context.Context, req *apis.SignUpRequest) (*api
 		return &resp, nil
 	}
 
-	resp.AuthToken = &apis.AuthToken{
+	resp.AuthToken = h.toAuthToken(at)
+	return &resp, nil
+}
+
+func (h *AuthHandler) SignIn(ctx context.Context, req *apis.SignInRequest) (*apis.AuthResponse, error) {
+	data1 := models.SignInRequest{
+		Email:    req.GetEmail(),
+		Password: req.GetPassword(),
+	}
+
+	a, err := h.au.SignIn(ctx, &data1)
+	if err != nil {
+		return nil, err
+	}
+
+	ua, ip := utils.CtxRequestMeta(ctx)
+	if ua == "" || ip == "" {
+		return nil, ce.NewError(
+			ce.CodeInvalidRequestMeta,
+			ce.MsgMissingRequestMeta,
+			nil,
+			logger.NewField("user_agent", ua),
+			logger.NewField("ip_address", ip),
+		)
+	}
+
+	data2 := models.RequestMeta{
+		UserAgent: ua,
+		IPAddress: ip,
+	}
+
+	at, err := h.su.CreateSession(ctx, a, &data2)
+
+	return &apis.AuthResponse{
+		AuthToken: h.toAuthToken(at),
+		Auth:      h.toAuth(a),
+	}, err
+}
+
+func (h *AuthHandler) toAuthToken(at *models.AuthToken) *apis.AuthToken {
+	return &apis.AuthToken{
 		AccessToken:  at.AccessToken,
 		RefreshToken: at.RefreshToken,
 		ExpiresIn:    at.ExpiresIn,
 	}
-	return &resp, nil
 }
 
 func (h *AuthHandler) toAuth(a *models.Auth) *apis.Auth {

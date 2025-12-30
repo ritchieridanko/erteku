@@ -16,6 +16,7 @@ var (
 
 // Internal error codes
 const (
+	CodeAuthNotFound          errCode = "ERR_AUTH_NOT_FOUND"
 	CodeBCryptHashingFailed   errCode = "ERR_BCRYPT_HASHING_FAILED"
 	CodeCacheQueryExec        errCode = "ERR_CACHE_QUERY_EXECUTION"
 	CodeCacheScriptExec       errCode = "ERR_CACHE_SCRIPT_EXECUTION"
@@ -28,9 +29,13 @@ const (
 	CodeInvalidRequestMeta    errCode = "ERR_INVALID_REQUEST_META"
 	CodeJWTGenerationFailed   errCode = "ERR_JWT_GENERATION_FAILED"
 	CodeUnknown               errCode = "ERR_UNKNOWN"
+	CodeWrongPassword         errCode = "ERR_WRONG_PASSWORD"
+	CodeWrongSignInMethod     errCode = "ERR_WRONG_SIGN_IN_METHOD"
 )
 
 // External error messages
 const (
-	MsgInternalServer string = "Internal server error"
+	MsgInternalServer     string = "Internal server error"
+	MsgInvalidCredentials string = "Invalid credentials"
+	MsgMissingRequestMeta string = "Missing IP address or user agent"
 )

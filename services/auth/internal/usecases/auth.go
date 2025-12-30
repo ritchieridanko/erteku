@@ -22,6 +22,7 @@ import (
 
 type AuthUsecase interface {
 	SignUp(ctx context.Context, data *models.SignUpRequest) (auth *models.Auth, err *ce.Error)
+	SignIn(ctx context.Context, data *models.SignInRequest) (auth *models.Auth, err *ce.Error)
 }
 
 type authUsecase struct {
@@ -131,6 +132,41 @@ func (u *authUsecase) SignUp(ctx context.Context, data *models.SignUpRequest) (*
 			logger.NewField("auth_id", a.ID),
 			logger.NewField("error_code", ce.CodeEventPublishingFailed),
 			logger.NewField("error", ep),
+		)
+	}
+
+	return a, nil
+}
+
+func (u *authUsecase) SignIn(ctx context.Context, data *models.SignInRequest) (*models.Auth, *ce.Error) {
+	ctx, span := otel.Tracer(u.appName).Start(ctx, "auth.usecase.SignIn")
+	defer span.End()
+
+	email := utils.NormalizeString(data.Email)
+
+	// Validation
+	if ok, why := u.validator.Email(&email); !ok {
+		return nil, ce.NewError(ce.CodeInvalidEmail, why, nil)
+	}
+
+	a, err := u.ar.GetAuthByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	if a.Password == nil {
+		return nil, ce.NewError(
+			ce.CodeWrongSignInMethod,
+			ce.MsgInvalidCredentials,
+			nil,
+			logger.NewField("auth_id", a.ID),
+		)
+	}
+	if err := u.bcrypt.Validate(*a.Password, data.Password); err != nil {
+		return nil, ce.NewError(
+			ce.CodeWrongPassword,
+			ce.MsgInvalidCredentials,
+			err,
+			logger.NewField("auth_id", a.ID),
 		)
 	}
 
