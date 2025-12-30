@@ -1,0 +1,16 @@
+CREATE TABLE sessions(
+  id BIGSERIAL PRIMARY KEY,
+  auth_id BIGINT NOT NULL,
+  parent_id BIGINT,
+
+  refresh_token VARCHAR UNIQUE NOT NULL,
+  user_agent TEXT NOT NULL,
+  ip_address TEXT NOT NULL,
+
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  expires_at TIMESTAMPTZ NOT NULL,
+  revoked_at TIMESTAMPTZ,
+
+  FOREIGN KEY (auth_id) REFERENCES auth(id) ON DELETE CASCADE,
+  FOREIGN KEY (parent_id) REFERENCES sessions(id) ON DELETE CASCADE
+);

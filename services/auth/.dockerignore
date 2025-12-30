@@ -5,5 +5,6 @@ logs/
 coverage/
 *.md
 *.out
+Dockerfile.app
 Dockerfile.migrator
 Makefile

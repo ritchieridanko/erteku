@@ -11,12 +11,44 @@ import (
 
 type Config struct {
 	App      App      `mapstructure:"app"`
+	Auth     Auth     `mapstructure:"auth"`
+	Server   Server   `mapstructure:"server"`
 	Database Database `mapstructure:"database"`
+	Cache    Cache    `mapstructure:"cache"`
+	Broker   Broker   `mapstructure:"broker"`
+	Tracer   Tracer   `mapstructure:"tracer"`
 }
 
 type App struct {
 	Name string `mapstructure:"name"`
 	Env  string
+}
+
+type Auth struct {
+	BCrypt struct {
+		Cost int `mapstructure:"cost"`
+	} `mapstructure:"bcrypt"`
+
+	JWT struct {
+		Issuer   string        `mapstructure:"issuer"`
+		Secret   string        `mapstructure:"secret"`
+		Duration time.Duration `mapstructure:"duration"`
+	} `mapstructure:"jwt"`
+
+	Duration struct {
+		Session      time.Duration `mapstructure:"session"`
+		Verification time.Duration `mapstructure:"verification"`
+	} `mapstructure:"duration"`
+}
+
+type Server struct {
+	Addr string
+	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
+
+	Timeout struct {
+		Shutdown time.Duration `mapstructure:"shutdown"`
+	} `mapstructure:"timeout"`
 }
 
 type Database struct {
@@ -31,6 +63,30 @@ type Database struct {
 	MinConns        int           `mapstructure:"min_conns"`
 	MaxConnLifetime time.Duration `mapstructure:"max_conn_lifetime"`
 	MaxConnIdleTime time.Duration `mapstructure:"max_conn_idle_time"`
+}
+
+type Cache struct {
+	Addr       string
+	Host       string `mapstructure:"host"`
+	Port       int    `mapstructure:"port"`
+	Pass       string `mapstructure:"pass"`
+	MaxRetries int    `mapstructure:"max_retries"`
+	BaseDelay  int    `mapstructure:"base_delay"`
+}
+
+type Broker struct {
+	Brokers     string `mapstructure:"brokers"`
+	MaxAttempts int    `mapstructure:"max_attempts"`
+
+	Timeout struct {
+		Batch time.Duration `mapstructure:"batch"`
+	} `mapstructure:"timeout"`
+}
+
+type Tracer struct {
+	Endpoint string
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
 }
 
 func Init(path string) (*Config, error) {
@@ -60,6 +116,9 @@ func Init(path string) (*Config, error) {
 	}
 
 	cfg.App.Env = env
+	cfg.Server.Addr = fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
+	cfg.Cache.Addr = fmt.Sprintf("%s:%d", cfg.Cache.Host, cfg.Cache.Port)
+	cfg.Tracer.Endpoint = fmt.Sprintf("%s:%d", cfg.Tracer.Host, cfg.Tracer.Port)
 	cfg.Database.DSN = fmt.Sprintf(
 		"postgresql://%s:%s@%s:%d/%s?sslmode=%s",
 		cfg.Database.User,

@@ -1,9 +1,13 @@
 # === Variables ===
 BINARY_DIR := bin
+APP_BIN := $(BINARY_DIR)/app
 MIGRATOR_BIN := $(BINARY_DIR)/migrator
 
 help:
 	@echo "Available commands:"
+	@echo " make run-app                      Run the application"
+	@echo " make build-app                    Build the application"
+	@echo " make build-and-run-app            Build and run the application"
 	@echo " make setup-database               Create the database"
 	@echo " make drop-database                Drop the database"
 	@echo " make run-migrator-up              Apply all up migrations"
@@ -11,6 +15,17 @@ help:
 	@echo " make run-migrator-down-all        Apply all down migrations"
 	@echo " make build-migrator               Build the migrator"
 	@echo " make build-and-run-migrator-up    Build and run the migrator up"
+
+# ---------- App Commands ----------
+run-app:
+	go run cmd/app/main.go
+
+build-app:
+	go build -o $(APP_BIN) cmd/app/main.go
+
+build-and-run-app:
+	make build-app
+	./$(APP_BIN)
 
 # ---------- Database Commands ----------
 setup-database:

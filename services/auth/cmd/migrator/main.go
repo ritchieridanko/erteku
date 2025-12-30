@@ -18,16 +18,16 @@ func main() {
 		log.Fatalln("[FATAL]:", err)
 	}
 
-	m, err := database.NewMigrator(&cfg.Database, "migrations")
+	m, err := database.NewMigrator(&cfg.Database, "./migrations")
 	if err != nil {
 		log.Fatalln("[FATAL]:", err)
 	}
 
-	defer func() {
+	defer func(m *database.Migrator) {
 		if err := m.Close(); err != nil {
 			log.Println("[WARN]:", err)
 		}
-	}()
+	}(m)
 
 	if *fu {
 		if err := m.Up(); err != nil {

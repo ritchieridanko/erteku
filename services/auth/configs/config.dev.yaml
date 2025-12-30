@@ -1,6 +1,23 @@
 app:
   name: "auth-service"
 
+auth:
+  bcrypt:
+    cost: 10
+  jwt:
+    issuer: "erteku"
+    secret: ""
+    duration: "10m"
+  duration:
+    session: "24h"
+    verification: "24h"
+
+server:
+  host: "localhost"
+  port: 50051
+  timeout:
+    shutdown: "10s"
+
 database:
   host: "localhost"
   port: 5432
@@ -12,3 +29,20 @@ database:
   min_conns: 1
   max_conn_lifetime: "1h"
   max_conn_idle_time: "30m"
+
+cache:
+  host: "localhost"
+  port: 6379
+  pass: ""
+  max_retries: 3
+  base_delay: 100
+
+broker:
+  brokers: "localhost:9092,localhost:9093,localhost:9094"
+  max_attempts: 3
+  timeout:
+    batch: "10ms"
+
+tracer:
+  host: "localhost"
+  port: 4317
